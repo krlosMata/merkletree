@@ -1,0 +1,24 @@
+{
+  "name": "merkletree",
+  "version": "1.0.0",
+  "description": "merkle tree implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krlosMata/merkletree.git"
+  },
+  "author": "krlosMata",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/krlosMata/merkletree/issues"
+  },
+  "homepage": "https://github.com/krlosMata/merkletree#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "keccak": "^1.4.0",
+    "mocha": "^5.2.0"
+  }
+}
