@@ -1,10 +1,10 @@
 {
   "name": "merkletree",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "merkle tree implementation",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 10000"
   },
   "repository": {
     "type": "git",

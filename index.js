@@ -1,2 +1,2 @@
-const merkletreeLib = require('./src/index.js');
-module.exports = merkletreeLib;
+const lib = require('./src/index.js');
+module.exports = lib;

@@ -1,7 +1,7 @@
 const common = require('./common');
-const merkletree = require('./merkletree');
+const MerkleTree = require('./merkle-tree');
 
 module.exports = {
-    merkletree,
+    MerkleTree,
     common
 };
