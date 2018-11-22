@@ -41,7 +41,7 @@ class MerkleTree {
         // Find last node written
         key = this.root; // Start with root node 
         for(let i = 0; i < this.numLayers;i++){
-            nodeValue = this.getNodeValueByKey(key);
+            nodeValue = getNodeValueByKey(this.mt,key);
             if(nodeValue == emptyNodeValue){ // Empty node found
                 finalIndex = i-1;
                 break;
@@ -61,7 +61,7 @@ class MerkleTree {
 
         if(finalIndex < 0) // No siblings where found
         {
-            let hashTmp = this.getCutNodeHash(ht,positionClaim,this.numLayers);
+            let hashTmp = getCutNodeHash(ht,positionClaim,this.numLayers,this.numLayers);
             this.root = hashTmp;
             let node =  helpers.addFlagNode(claim,true);
             this.mt.set(hashTmp, node);
@@ -69,7 +69,7 @@ class MerkleTree {
         }
         if(nodeValue == emptyNodeValue){
             // Calcular nuevo nodo, que sera nodo final
-            let hashTmp = this.getCutNodeHash(ht,positionClaim,this.numLayers - (finalIndex+1));
+            let hashTmp = getCutNodeHash(ht,positionClaim,this.numLayers - (finalIndex+1),this.numLayers);
             let node =  helpers.addFlagNode(claim,true);
             this.mt.set(hashTmp, node);
 
@@ -102,8 +102,8 @@ class MerkleTree {
             }
         }
         // Write current branch
-        let hashNew = this.getCutNodeHash(ht,positionClaim,this.numLayers - (finalIndex+1));
-        let hashTmp = this.getCutNodeHash(htTmp,positionClaimTmp,this.numLayers - (finalIndex+1));
+        let hashNew = getCutNodeHash(ht,positionClaim,this.numLayers - (finalIndex+1),this.numLayers);
+        let hashTmp = getCutNodeHash(htTmp,positionClaimTmp,this.numLayers - (finalIndex+1),this.numLayers);
         let node =  helpers.addFlagNode(claim,true);
         this.mt.set(hashNew, node);
         node =  helpers.addFlagNode(claimTmp,true);
@@ -146,7 +146,7 @@ class MerkleTree {
         // Find last node written
         // Start with root node
         for(let i = 0; i < this.numLayers;i++){
-            nodeValue = this.getNodeValueByKey(key);
+            nodeValue = getNodeValueByKey(this.mt,key);
             if(!nodeValue.flag){ // Check if it is a final node
                 let childLeft = nodeValue.data[0];
                 let childRight = nodeValue.data[1];
@@ -176,7 +176,7 @@ class MerkleTree {
         // Calculate sibling of the last node
         let siblingsIndicator = Buffer.alloc(32);
         let startIndex = siblingsIndicator.length - 1;
-        let newSibling = this.getCutNodeHash(htTmp,positionClaimTmp,this.numLayers - (indexSibling+1));
+        let newSibling = getCutNodeHash(htTmp,positionClaimTmp,this.numLayers - (indexSibling+1),this.numLayers);
         let numByte = Math.floor((indexSibling)/8);
         if(indexSibling > 0 ){
             siblingArray.push(newSibling);
@@ -210,7 +210,7 @@ class MerkleTree {
         let nodeValue;
         // Find last node written
         for(let i = 0; i < this.numLayers;i++){
-            nodeValue = this.getNodeValueByKey(key);
+            nodeValue = getNodeValueByKey(this.mt,key);
             if(!nodeValue.flag){ // Check if it is a final node
                 let childLeft = nodeValue.data[0];
                 let childRight = nodeValue.data[1];
@@ -221,35 +221,35 @@ class MerkleTree {
         }
         return emptyNodeValue;
     }
+}
 
-    /**
-    * Calculate node of merkle tree from bottom to a given position just with empty nodes
-    * @param {Uint8Array} ht - Hash of the leaf
-    * @param {Array} bitsHi - Array of bits determining leaf position
-    * @param {uint} index - Number of levels to calculate
-    * @returns {Buffer} - A new Buffer
-    */
-    getCutNodeHash(ht,bitsHi,index){
-        let hashTmp = ht;
-        let concatHash;
-        for(let i = 0; i < index; i++){
-            concatHash = bitsHi[(this.numLayers-1)-i]?[emptyNodeValue,hashTmp]:[hashTmp,emptyNodeValue];
-            hashTmp = common.hashBytes(Buffer.concat(concatHash));
-        }
-        return hashTmp;
+/**
+* Calculate node of merkle tree from bottom to a given position just with empty nodes
+* @param {Uint8Array} ht - Hash of the leaf
+* @param {Array} bitsHi - Array of bits determining leaf position
+* @param {uint} index - Number of levels to calculate
+* @returns {Buffer} - A new Buffer
+*/
+function getCutNodeHash(ht,bitsHi,index,numLayers){
+    let hashTmp = ht;
+    let concatHash;
+    for( let i = 0; i < index; i++){
+        concatHash = bitsHi[(numLayers-1)-i]?[emptyNodeValue,hashTmp]:[hashTmp,emptyNodeValue];
+        hashTmp = common.hashBytes(Buffer.concat(concatHash));
     }
+    return hashTmp;
+}
 
-    /**
-    * Retrieve node value from merkle tree
-    * @param {Buffer} key - Key value of the node
-    * @returns {Buffer} - Value of the node
-    */
-    getNodeValueByKey(key){
-        if(this.mt.has(key))
-            return this.mt.get(key);
-        else
-            return emptyNodeValue;
-    }
+/**
+* Retrieve node value from merkle tree
+* @param {Buffer} key - Key value of the node
+* @returns {Buffer} - Value of the node
+*/
+function getNodeValueByKey(mt,key){
+    if(mt.has(key))
+        return mt.get(key);
+    else
+        return emptyNodeValue;
 }
 
 /**
@@ -282,7 +282,7 @@ function checkProof(rootHex, proofHex, hiHex, htHex, numLevels) {
         siblings.push(siblingHash);
     }
 
-    // 
+    // Calculate root of the merkle tree giving the claim
     for(let index = numLayers - 1; index >= 0; index--){
         let numByte = Math.floor(index/8);
         let sibling = [];
@@ -298,7 +298,6 @@ function checkProof(rootHex, proofHex, hiHex, htHex, numLevels) {
         nodeTmp = path[index]?[sibling, nodeHash]:[nodeHash, sibling];
         node = Buffer.concat(nodeTmp);
 
-        
         if ((Buffer.compare(nodeHash, emptyNodeValue) === 0) && (Buffer.compare(sibling, emptyNodeValue) === 0)) {
             nodeHash = emptyNodeValue;
         } else {

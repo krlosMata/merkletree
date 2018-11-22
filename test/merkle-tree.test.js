@@ -4,14 +4,14 @@ const { expect } = chai;
 
 describe('empty tree', () => {
   it('should be empty', () => {
-    let mt = new lib.MerkleTree.MerkleTree(140);
+    let mt = new lib.merkleTree.MerkleTree(140);
     expect(lib.common.bytesToHex(mt.root)).to.be.equal('0x0000000000000000000000000000000000000000000000000000000000000000');
   });
 });
 
 describe('addClaim', () => {
     it('add one claim', () => {
-      let mt = new lib.MerkleTree.MerkleTree(140);
+      let mt = new lib.merkleTree.MerkleTree(140);
       let claim = {
         data: Buffer.from('this is a test claim'),
         indexLength: 15
@@ -23,7 +23,7 @@ describe('addClaim', () => {
 
 describe('add two claims', () => {
     it('adding two claims', () => {
-      let mt = new lib.MerkleTree.MerkleTree(140);
+      let mt = new lib.merkleTree.MerkleTree(140);
       let claim = {
         data: Buffer.from('this is a test claim'),
         indexLength: 15
@@ -43,7 +43,7 @@ describe('add two claims', () => {
 
 describe('generateProof', () => {
     it('with only one claim in the MerkleTree, and with two claims in the MerkleTree', () => {
-      let mt = new lib.MerkleTree.MerkleTree(140);
+      let mt = new lib.merkleTree.MerkleTree(140);
       let claim = {
         data: Buffer.from('this is a test claim'),
         indexLength: 15
@@ -68,7 +68,7 @@ describe('generateProof', () => {
 
 describe('generateProof of emptyLeaf', () => {
     it('with only one claim in the MerkleTree, and with two claims in the MerkleTree', () => {
-      let mt = new lib.MerkleTree.MerkleTree(140);
+      let mt = new lib.merkleTree.MerkleTree(140);
       let claim = {
         data: Buffer.from('this is a test claim'),
         indexLength: 15
@@ -102,7 +102,7 @@ describe('generateProof of emptyLeaf', () => {
   
 describe('getClaimByHi', () => {
     it('getClaimByHi', () => {
-      let mt = new lib.MerkleTree.MerkleTree(140);
+      let mt = new lib.merkleTree.MerkleTree(140);
       let claim = {
         data: Buffer.from('this is a test claim'),
         indexLength: 15
@@ -128,7 +128,7 @@ describe('checkProof of a Leaf', () => {
     const mpHex = '0x0000000000000000000000000000000000000000000000000000000000000002d45aada6eec346222eaa6b5d3a9260e08c9b62fcf63c72bc05df284de07e6a52';
     const hiHex = '0x786677808ba77bdd9090a969f1ef2cbd1ac5aecd9e654f340500159219106878';
     const htHex = '0x786677808ba77bdd9090a969f1ef2cbd1ac5aecd9e654f340500159219106878';
-    const verified = lib.MerkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
+    const verified = lib.merkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
     expect(verified).to.be.equal(true);
   });
 });
@@ -139,14 +139,14 @@ describe('checkProof of Empty Leaf', () => {
     const mpHex = '0x0000000000000000000000000000000000000000000000000000000000000004bf8e980d2ed328ae97f65c30c25520aeb53ff837579e392ea1464934c7c1feb9';
     const hiHex = '0xa69792a4cff51f40b7a1f7ae596c6ded4aba241646a47538898f17f2a8dff647';
     const htHex = '0x0000000000000000000000000000000000000000000000000000000000000000';
-    const verified = lib.MerkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
+    const verified = lib.merkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
     expect(verified).to.be.equal(true);
   });
 });
 
 describe('generateProof and checkProof', () => {
   it('generateProof and checkProof', () => {
-    let mt = new lib.MerkleTree.MerkleTree(140);
+    let mt = new lib.merkleTree.MerkleTree(140);
     let claim = {
       data: Buffer.from('this is a test claim'),
       indexLength: 15
@@ -171,7 +171,7 @@ describe('generateProof and checkProof', () => {
     let mpHex = lib.common.bytesToHex(proof2);
     let hiHex = lib.common.bytesToHex(hi2);
     let htHex = lib.common.bytesToHex(lib.common.hashBytes(claim2.data));
-    let verified = lib.MerkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
+    let verified = lib.merkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
     expect(verified).to.be.equal(true);
 
 
@@ -189,14 +189,14 @@ describe('generateProof and checkProof', () => {
     hiHex = lib.common.bytesToHex(hi3);
     // as we are prooving an empty leaf, the Ht is an empty value (0x000...0)
     htHex = '0x0000000000000000000000000000000000000000000000000000000000000000';
-    verified = lib.MerkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
+    verified = lib.merkleTree.checkProof(rootHex, mpHex, hiHex, htHex, 140);
     expect(verified).to.be.equal(true);
   });
 });
 
 describe('add claims in different orders', () => {
   it('add claims in different orders', () => {
-    let mt1 = new lib.MerkleTree.MerkleTree(140);
+    let mt1 = new lib.merkleTree.MerkleTree(140);
     let claim0 = {
       data: Buffer.from('0 this is a test claim'),
       indexLength: 15
@@ -223,7 +223,7 @@ describe('add claims in different orders', () => {
     mt1.addClaim(claim3);
     mt1.addClaim(claim4);
 
-    let mt2 = new lib.MerkleTree.MerkleTree(140);
+    let mt2 = new lib.merkleTree.MerkleTree(140);
     mt2.addClaim(claim2);
     mt2.addClaim(claim1);
     mt2.addClaim(claim0);
@@ -235,7 +235,7 @@ describe('add claims in different orders', () => {
 
 describe('add 1000 claims', () => {
   it('add 1000 claims', () => {
-    let mt = new lib.MerkleTree.MerkleTree(140);
+    let mt = new lib.merkleTree.MerkleTree(140);
     let numToAdd = 1000;
     for(var i=0; i<numToAdd; i++) {
       let claim = {
